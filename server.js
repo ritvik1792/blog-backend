@@ -11,6 +11,7 @@ import {
   invalidPathHandler,
 } from "./middleware/errorHandler.js";
 
+// testing
 // Routes
 import userRoutes from "./routes/userRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
