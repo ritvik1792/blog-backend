@@ -265,8 +265,7 @@ const deleteUser = async (req, res, next) => {
 
 const becomeWriter = async (req, res, next) => {
   try {
-    let user = await User.findById(req.user._id);
-
+    let user = await User.findById(req.body.user._id);
     if (!user) {
       throw new Error("User no found");
     }
@@ -275,6 +274,40 @@ const becomeWriter = async (req, res, next) => {
     await user.save();
 
     res.status(200).json({ message: "You are now a writer" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const verifyWriter = async( req, res, next) => {
+  try {
+    let user = await User.findById(req.body.user._id);
+    if (!user) {
+      throw new Error("User no found");
+    }
+
+    user.verifiedWriter = true;
+
+    await user.save();
+
+    res.status(200).json({ message: "Writer verified successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const disapprovedWriter = async( req, res, next) => {
+  try {
+    let user = await User.findById(req.body.user._id);
+    if (!user) {
+      throw new Error("User no found");
+    }
+
+    user.verifiedWriter = false;
+
+    await user.save();
+
+    res.status(200).json({ message: "Writer disapproved successfully" });
   } catch (error) {
     next(error);
   }
@@ -289,4 +322,6 @@ export {
   getAllUsers,
   deleteUser,
   becomeWriter,
+  verifyWriter,
+  disapprovedWriter,
 };

@@ -14,6 +14,7 @@ const UserSchema = new Schema(
     verificationCode: { type: String, required: false },
     admin: { type: Boolean, default: false },
     writer: { type: Boolean, default: false },
+    verifiedWriter: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
