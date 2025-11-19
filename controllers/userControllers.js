@@ -6,7 +6,7 @@ import { fileRemover } from "../utils/fileRemover.js";
 
 const registerUser = async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, writer } = req.body;
 
     // check whether the user exists or not
     let user = await User.findOne({ email });
@@ -20,6 +20,7 @@ const registerUser = async (req, res, next) => {
       name,
       email,
       password,
+      writer: writer || false,
     });
 
     return res.status(201).json({
@@ -29,6 +30,7 @@ const registerUser = async (req, res, next) => {
       email: user.email,
       verified: user.verified,
       admin: user.admin,
+      writer: user.writer,
       token: await user.generateJWT(),
     });
   } catch (error) {
@@ -54,6 +56,7 @@ const loginUser = async (req, res, next) => {
         email: user.email,
         verified: user.verified,
         admin: user.admin,
+        writer: user.writer,
         token: await user.generateJWT(),
       });
     } else {
@@ -76,6 +79,7 @@ const userProfile = async (req, res, next) => {
         email: user.email,
         verified: user.verified,
         admin: user.admin,
+        writer: user.writer,
       });
     } else {
       let error = new Error("User not found");
@@ -126,6 +130,7 @@ const updateProfile = async (req, res, next) => {
       email: updatedUserProfile.email,
       verified: updatedUserProfile.verified,
       admin: updatedUserProfile.admin,
+      writer: updatedUserProfile.writer,
       token: await updatedUserProfile.generateJWT(),
     });
   } catch (error) {
@@ -161,6 +166,7 @@ const updateProfilePicture = async (req, res, next) => {
             email: updatedUser.email,
             verified: updatedUser.verified,
             admin: updatedUser.admin,
+            writer: updatedUser.writer,
             token: await updatedUser.generateJWT(),
           });
         } else {
@@ -177,6 +183,7 @@ const updateProfilePicture = async (req, res, next) => {
             email: updatedUser.email,
             verified: updatedUser.verified,
             admin: updatedUser.admin,
+            writer: updatedUser.writer,
             token: await updatedUser.generateJWT(),
           });
         }
@@ -256,6 +263,56 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
+const becomeWriter = async (req, res, next) => {
+  try {
+    let user = await User.findById(req.body.user._id);
+    if (!user) {
+      throw new Error("User no found");
+    }
+
+    user.writer = true;
+    await user.save();
+
+    res.status(200).json({ message: "You are now a writer" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const verifyWriter = async( req, res, next) => {
+  try {
+    let user = await User.findById(req.body.user._id);
+    if (!user) {
+      throw new Error("User no found");
+    }
+
+    user.verifiedWriter = true;
+
+    await user.save();
+
+    res.status(200).json({ message: "Writer verified successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const disapprovedWriter = async( req, res, next) => {
+  try {
+    let user = await User.findById(req.body.user._id);
+    if (!user) {
+      throw new Error("User no found");
+    }
+
+    user.verifiedWriter = false;
+
+    await user.save();
+
+    res.status(200).json({ message: "Writer disapproved successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   registerUser,
   loginUser,
@@ -264,4 +321,7 @@ export {
   updateProfilePicture,
   getAllUsers,
   deleteUser,
+  becomeWriter,
+  verifyWriter,
+  disapprovedWriter,
 };
