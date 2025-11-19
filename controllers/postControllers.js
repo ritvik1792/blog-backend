@@ -149,6 +149,53 @@ const getPost = async (req, res, next) => {
   }
 };
 
+const getPostsByUser = async (req, res, next) => {
+  try {
+    const userId = req.params.userId;
+
+    const posts = await Post.find({ user: userId }).populate([
+      {
+        path: "user",
+        select: ["avatar", "name"],
+      },
+      {
+        path: "categories",
+        select: ["title"],
+      },
+      {
+        path: "comments",
+        match: {
+          check: true,
+          parent: null,
+        },
+        populate: [
+          {
+            path: "user",
+            select: ["avatar", "name"],
+          },
+          {
+            path: "replies",
+            match: {
+              check: true,
+            },
+            populate: [
+              {
+                path: "user",
+                select: ["avatar", "name"],
+              },
+            ],
+          },
+        ],
+      },
+    ]);
+
+    return res.json(posts);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 const getAllPosts = async (req, res, next) => {
   try {
     const filter = req.query.searchKeyword;
@@ -206,4 +253,4 @@ const getAllPosts = async (req, res, next) => {
   }
 };
 
-export { createPost, updatePost, deletePost, getPost, getAllPosts };
+export { createPost, updatePost, deletePost, getPost, getAllPosts, getPostsByUser };

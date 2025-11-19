@@ -31,6 +31,7 @@ const registerUser = async (req, res, next) => {
       verified: user.verified,
       admin: user.admin,
       writer: user.writer,
+      verifiedWriter: user.verifiedWriter,
       token: await user.generateJWT(),
     });
   } catch (error) {
@@ -57,6 +58,7 @@ const loginUser = async (req, res, next) => {
         verified: user.verified,
         admin: user.admin,
         writer: user.writer,
+        verifiedWriter: user.verifiedWriter,
         token: await user.generateJWT(),
       });
     } else {
@@ -80,6 +82,7 @@ const userProfile = async (req, res, next) => {
         verified: user.verified,
         admin: user.admin,
         writer: user.writer,
+        verifiedWriter: user.verifiedWriter,
       });
     } else {
       let error = new Error("User not found");
@@ -131,6 +134,7 @@ const updateProfile = async (req, res, next) => {
       verified: updatedUserProfile.verified,
       admin: updatedUserProfile.admin,
       writer: updatedUserProfile.writer,
+      verifiedWriter: updatedUserProfile.verifiedWriter,
       token: await updatedUserProfile.generateJWT(),
     });
   } catch (error) {
@@ -167,6 +171,7 @@ const updateProfilePicture = async (req, res, next) => {
             verified: updatedUser.verified,
             admin: updatedUser.admin,
             writer: updatedUser.writer,
+            verifiedWriter: updatedUser.verifiedWriter,
             token: await updatedUser.generateJWT(),
           });
         } else {
@@ -184,6 +189,7 @@ const updateProfilePicture = async (req, res, next) => {
             verified: updatedUser.verified,
             admin: updatedUser.admin,
             writer: updatedUser.writer,
+            verifiedWriter: updatedUser.verifiedWriter,
             token: await updatedUser.generateJWT(),
           });
         }
@@ -279,35 +285,18 @@ const becomeWriter = async (req, res, next) => {
   }
 };
 
-const verifyWriter = async( req, res, next) => {
+const updateWriter = async( req, res, next) => {
   try {
     let user = await User.findById(req.body.user._id);
     if (!user) {
       throw new Error("User no found");
     }
+    user.writer = req.body.writer;
+    user.verifiedWriter = req.body.writer;
 
-    user.verifiedWriter = true;
+    const updatedUser = await user.save();
 
-    await user.save();
-
-    res.status(200).json({ message: "Writer verified successfully" });
-  } catch (error) {
-    next(error);
-  }
-};
-
-const disapprovedWriter = async( req, res, next) => {
-  try {
-    let user = await User.findById(req.body.user._id);
-    if (!user) {
-      throw new Error("User no found");
-    }
-
-    user.verifiedWriter = false;
-
-    await user.save();
-
-    res.status(200).json({ message: "Writer disapproved successfully" });
+    res.status(200).json(updatedUser);
   } catch (error) {
     next(error);
   }
@@ -322,6 +311,5 @@ export {
   getAllUsers,
   deleteUser,
   becomeWriter,
-  verifyWriter,
-  disapprovedWriter,
+  updateWriter,
 };

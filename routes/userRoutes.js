@@ -9,16 +9,14 @@ import {
   getAllUsers,
   deleteUser,
   becomeWriter,
-  verifyWriter,
-  disapprovedWriter,
+  updateWriter,
 } from "../controllers/userControllers.js";
 import { adminGuard, authGuard } from "../middleware/authMiddleware.js";
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.post('/becomeWriter', becomeWriter);
-router.post('/verifyWriter', verifyWriter);
-router.post('/disapprovedWriter', disapprovedWriter);
+router.post('/updateWriter', updateWriter);
 router.get("/profile", authGuard, userProfile);
 router.put("/updateProfile/:userId", authGuard, updateProfile);
 router.put("/updateProfilePicture", authGuard, updateProfilePicture);
