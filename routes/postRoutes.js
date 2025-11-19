@@ -6,14 +6,16 @@ import {
   getAllPosts,
   getPost,
   updatePost,
+  getPostsByUser,
 } from "../controllers/postControllers.js";
-import { authGuard, adminGuard } from "../middleware/authMiddleware.js";
+import { authGuard, writerGuard } from "../middleware/authMiddleware.js";
 
-router.route("/").post(authGuard, adminGuard, createPost).get(getAllPosts);
+router.route("/").post(authGuard, writerGuard, createPost).get(getAllPosts);
 router
   .route("/:slug")
-  .put(authGuard, adminGuard, updatePost)
-  .delete(authGuard, adminGuard, deletePost)
+  .put(authGuard, writerGuard, updatePost)
+  .delete(authGuard, writerGuard, deletePost)
   .get(getPost);
 
+router.route("/user/:userId").get(getPostsByUser);
 export default router;
